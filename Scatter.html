@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scatterplot Using Iris Dataset</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<h1>Scatterplot Using Iris Dataset</h1>
+
+
+	<script>
+		// Set the dimensions and margins of the plot
+		var margin = {top: 20, right: 20, bottom: 50, left: 70},
+		    width = 600 - margin.left - margin.right,
+		    height = 600 - margin.top - margin.bottom;
+
+		// Append the SVG element to the div
+		var svg = d3.select("body")
+		  .append("svg")
+		    .attr("width", width + margin.left + margin.right)
+		    .attr("height", height + margin.top + margin.bottom)
+		  .append("g")
+		    .attr("transform",
+		          "translate(" + margin.left + "," + margin.top + ")");
+
+		// Load the data from a JSON file
+		d3.json("iris.json").then(function(data) {
+
+		  // Define the x and y scales
+		  var x = d3.scaleLinear()
+		      .domain([d3.min(data, function(d) { return d.petalWidth; }), d3.max(data, function(d) { return d.petalWidth; })])
+		      .range([ 0, width ]);
+		  svg.append("g")
+		      .attr("transform", "translate(0," + height + ")")
+		      .call(d3.axisBottom(x));
+
+		  var y = d3.scaleLinear()
+		      .domain([d3.min(data, function(d) { return d.petalLength; }), d3.max(data, function(d) { return d.petalLength; })])
+		      .range([ height, 0]);
+		  svg.append("g")
+		      .call(d3.axisLeft(y));
+
+		  // Add the x-axis label
+		  svg.append("text")
+		      .attr("text-anchor", "end")
+		      .attr("x", width)
+		      .attr("y", height + margin.top + 20)
+		      .text("Petal Width");
+
+		  // Add the y-axis label and rotate it
+		  svg.append("text")
+		      .attr("text-anchor", "end")
+		      .attr("transform", "rotate(-90)")
+		      .attr("y", -margin.left + 20)
+		      .attr("x", -margin.top - height / 2 + 20)
+		      .text("Petal Length");
+
+		  // Draw the points as circles
+		  svg.selectAll("circle")
+		      .data(data)
+		      .enter()
+		      .append("circle")
+		        .attr("cx", function(d) { return x(d.petalWidth); })
+		        .attr("cy", function(d) { return y(d.petalLength); })
+		        .attr("r", 5)
+		        .attr("fill", "red");
+		});
+	</script>
+</body>
+</html>
